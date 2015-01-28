@@ -4,11 +4,16 @@ module Databasedotcom
       module ClassMethods
         def dbdc_client
           unless @dbdc_client
-            config = YAML.load_file(ERB.new(File.join(::Rails.root, 'config', 'databasedotcom.yml')))
-            config = config.has_key?(::Rails.env) ? config[::Rails.env] : config
-            username = config["username"]
-            password = config["password"]
-            @dbdc_client = Databasedotcom::Client.new(config)
+            username = ENV['SALESFORCE_USERNAME']
+            password = ENV["SALESFORCE_PASSWORD"]
+            @dbdc_client = Databasedotcom::Client.new(
+              client_id: ENV['SALESFORCE_CLIENT_ID'], 
+              client_secret: ENV['SALESFORCE_CLIENT_SECRET'],
+              verify_mode: 0,
+              debugging: nil, 
+              version: ENV["SALESFORCE_VERSION"],
+              host: ENV["SALESFORCE_HOST"]
+            )
             @dbdc_client.authenticate(:username => username, :password => password)
           end
 
